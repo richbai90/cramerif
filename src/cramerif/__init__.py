@@ -1,10 +1,16 @@
 import sys
 import importlib.util
+import importlib.resources
 from pathlib import Path
-from matplotlib import cm
+from matplotlib import colormaps as cm
 from matplotlib.colors import LinearSegmentedColormap
 
-RESOURCES_PATH = importlib.resources.files('cramerif') / 'resources'
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
+RESOURCES_PATH = files('cramerif') / 'resources'
 
 def use(name: str):
     """
@@ -19,44 +25,32 @@ def use(name: str):
             base_name, kind = name.rsplit('_', 1)
         else:
             base_name = name
-            kind = 'continuous'  # Assign a default kind
+            kind = 'continuous'
 
-        module_dir = RESOURCES_PATH / base_name
-        module_name = base_name
-        
+        # Construct the module path for a direct import
+        module_path = f"cramerif.resources.{base_name}"
         if kind == 'discrete':
-            module_dir = module_dir / 'DiscretePalettes'
+            module_path += f".DiscretePalettes.{base_name}"
         elif kind == 'categorical':
-            module_dir = module_dir / 'CategoricalPalettes'
-            module_name = f'{base_name}S'
-        
-        module_file = module_dir / f"{module_name}.py"
-        
-        if not module_file.exists():
-            print(f"❌ Error: Colormap file not found at '{module_file}'.")
-            return
+            module_path += f".CategoricalPalettes.{base_name}S"
+        else:
+            module_path += f".{base_name}"
 
-        unique_module_name = f"cramerif.resources.{base_name}.{kind}"
-        
-        spec = importlib.util.spec_from_file_location(unique_module_name, module_file)
-        if not (spec and spec.loader):
-            print(f"❌ Error: Could not create module spec for '{module_file}'.")
-            return
-            
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[unique_module_name] = module
-        spec.loader.exec_module(module)
+        # Import the module directly
+        module = importlib.import_module(module_path)
         
         if not hasattr(module, 'cm_data'):
-            print(f"❌ Error: The file '{module_file}' does not contain a 'cm_data' variable.")
+            print(f"❌ Error: The module '{module_path}' does not contain a 'cm_data' variable.")
             return
 
         cmap = LinearSegmentedColormap.from_list(name, module.cm_data)
         
-        cm.register_cmap(cmap=cmap)
-        cm.register_cmap(cmap=cmap.reversed(), name=f"{name}_r")
+        cm.register(cmap=cmap)
+        cm.register(cmap=cmap.reversed(), name=f"{name}_r")
         
         print(f"✅ Registered colormap '{name}' and its reversed version '{name}_r'.")
 
+    except ImportError:
+        print(f"❌ Error: Could not find the colormap module for '{name}'.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
