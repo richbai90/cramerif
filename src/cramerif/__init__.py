@@ -1,6 +1,7 @@
 import sys
 import importlib.util
 from pathlib import Path
+from matplotlib import cm
 
 # Get a path-like object to the resources folder within the cramerif package.
 RESOURCES_PATH = importlib.resources.files('cramerif') / 'resources'
@@ -40,6 +41,9 @@ def use(name: str):
             module = importlib.util.module_from_spec(spec)
             sys.modules[unique_module_name] = module
             spec.loader.exec_module(module)
+            cmap = getattr(module, f'{module_name}_map')
+            cm.register_cmap(cmap=cmap)
+            cm.register_cmap(cmap=cmap.reversed(), name=f"{module_name}_r")
             print(f"✅ Executed registration for colormap '{name}'.")
         else:
             print(f"❌ Error: Could not create a module spec for '{module_file}'.")
