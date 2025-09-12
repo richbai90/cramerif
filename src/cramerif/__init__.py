@@ -15,7 +15,8 @@ def use(name: str):
     """
     try:
         # --- 1. Find the Correct Module File Path (Your logic is great) ---
-        base_name, kind = name.split('_')
+        base_name, *rest = name.split('_')
+        kind = rest[0] if len(rest) else ''
         module_dir = RESOURCES_PATH / base_name
         module_name = base_name
 
