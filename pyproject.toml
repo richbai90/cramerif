@@ -1,7 +1,7 @@
 [project]
 name = "cramerif"
-version = "0.1.4"
-description = "Add your description here"
+version = "0.1.5"
+description = "Helper library for importing cramerif color schemes"
 readme = "README.md"
 authors = [
     { name = "Rich Baird", email = "rich@rbaird.me" }
