@@ -1,6 +1,6 @@
 [project]
 name = "cramerif"
-version = "0.1.5"
+version = "0.1.6"
 description = "Helper library for importing cramerif color schemes"
 readme = "README.md"
 authors = [
