@@ -3,9 +3,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from matplotlib import colormaps as cm
-from matplotlib.colors import LinearSegmentedColormap
-
 try:
     from importlib.resources import files
 except ImportError:
@@ -45,6 +42,9 @@ def use(name: str):
         name (str): The name of the colormap, with an optional _kind suffix
                     (e.g., 'batlow', 'batlow_discrete', 'batlow_categorical').
     """
+    from matplotlib import colormaps as cm
+    from matplotlib.colors import LinearSegmentedColormap
+
     try:
         module = _load_module(name)
         if not module:
