@@ -1,6 +1,6 @@
 [project]
 name = "cramerif"
-version = "0.1.6"
+version = "0.1.7"
 description = "Helper library for importing cramerif color schemes"
 readme = "README.md"
 authors = [
@@ -23,4 +23,5 @@ cramerif = ["resources/**/*"]
 dev = [
     "matplotlib>=3.10.6",
     "numpy>=2.2.6",
+    "opencv-python",
 ]
